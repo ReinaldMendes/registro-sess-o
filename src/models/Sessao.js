@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const SessaoSchema = new mongoose.Schema({
   visitante: { type: String, required: true },
+  mestreDirigente: { type: String, required: true },
   tipoSessao: { 
     type: String, 
     enum: ["Escala", "Escala Anual", "Instrutiva", "Quadro de Mestres", "Direção", "Extra", "Adventícios", "Outros"], 
