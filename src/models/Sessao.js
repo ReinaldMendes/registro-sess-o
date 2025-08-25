@@ -15,29 +15,11 @@ const SessaoSchema = new mongoose.Schema({
 
   vegetal: { type: String, required: true },
 
-  estoqueInicial: { type: Number },
+  estoqueInicial: { type: Number, required: true }, // agora obrigatório
   quantidadeCoada: { type: Number, required: true },
-  quantidadeBebida: { type: Number },
+  quantidadeBebida: { type: Number, required: true }, // calculado no backend
   retornoSessao: { type: Number, required: true },
-  estoqueFinal: { type: Number }
+  estoqueFinal: { type: Number, required: true } // calculado no backend
 }, { timestamps: true });
-
-// hook para calcular
-SessaoSchema.pre("save", async function(next) {
-  this.quantidadeBebida = this.quantidadeCoada - this.retornoSessao;
-
-  // pegar última sessão para calcular estoqueInicial
-  const ultimaSessao = await this.constructor.findOne().sort({ createdAt: -1 });
-
-  if (ultimaSessao) {
-    this.estoqueInicial = ultimaSessao.estoqueFinal;
-  } else {
-    this.estoqueInicial = this.estoqueInicial || 0; // primeira sessão
-  }
-
-  this.estoqueFinal = this.estoqueInicial - this.quantidadeBebida;
-
-  next();
-});
 
 module.exports = mongoose.model("Sessao", SessaoSchema);

@@ -32,3 +32,11 @@ exports.loginUsuario = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.listarUsuarios = async (req, res) => {
+  try {
+    const usuarios = await Usuario.find().select("-senha"); // não retorna a senha
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao buscar usuários", error: error.message });
+  }
+};

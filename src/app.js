@@ -14,5 +14,5 @@ connectDB();
 // rotas
 app.use("/api/sessoes", require("./routes/sessaoRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
-
+app.use("/api/estoques", require("./routes/estoqueRoutes"));
 module.exports = app;

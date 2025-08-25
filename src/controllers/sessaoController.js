@@ -1,9 +1,28 @@
 const Sessao = require("../models/Sessao");
+const Estoque = require("../models/Estoque");
 
 exports.criarSessao = async (req, res) => {
   try {
-    const novaSessao = new Sessao(req.body);
+    // Pega o estoque atual
+    const ultimoEstoque = await Estoque.findOne().sort({ createdAt: -1 });
+    const estoqueInicial = ultimoEstoque ? ultimoEstoque.quantidade : 0;
+
+    const quantidadeBebida = req.body.quantidadeCoada - req.body.retornoSessao;
+    const estoqueFinal = estoqueInicial - quantidadeBebida;
+
+    // Cria a sessão
+    const novaSessao = new Sessao({
+      ...req.body,
+      estoqueInicial,
+      quantidadeBebida,
+      estoqueFinal
+    });
+
     await novaSessao.save();
+
+    // Atualiza a tabela de Estoque
+    await Estoque.create({ quantidade: estoqueFinal });
+
     res.status(201).json(novaSessao);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -12,7 +31,7 @@ exports.criarSessao = async (req, res) => {
 
 exports.listarSessoes = async (req, res) => {
   try {
-    const sessoes = await Sessao.find();
+    const sessoes = await Sessao.find().sort({ createdAt: 1 }); // ordenar por data
     res.json(sessoes);
   } catch (error) {
     res.status(500).json({ error: error.message });

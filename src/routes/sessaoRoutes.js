@@ -6,13 +6,13 @@ const {
   buscarSessao,
   deletarSessao
 } = require("../controllers/sessaoController");
-const Sessao = require("../models/Sessao");
 
-// Rotas existentes
-router.post("/", criarSessao);
-router.get("/", listarSessoes);
-router.get("/:id", buscarSessao);
-router.delete("/:id", deletarSessao);
+const autenticarToken = require("../middlewares/authMiddleware");
 
+// Rotas protegidas
+router.post("/", autenticarToken, criarSessao);
+router.get("/", autenticarToken, listarSessoes);
+router.get("/:id", autenticarToken, buscarSessao);
+router.delete("/:id", autenticarToken, deletarSessao);
 
 module.exports = router;

@@ -1,118 +1,138 @@
 <template>
-    <PrivateLayout>
-      <div class="sessao-page">
-        <h1>Registrar Sessão 🌿</h1>
-  
-        <!-- Mensagens -->
-        <p v-if="sucesso" class="success-message">{{ sucesso }}</p>
-        <p v-if="erro" class="error-message">{{ erro }}</p>
-  
-        <!-- Estoque Inicial -->
-        <div class="card estoque-card">
-          <h2>Estoque Inicial</h2>
-          <input
-            type="number"
-            v-model.number="estoqueInicial"
-            placeholder="Informe o Estoque Inicial"
-            min="0"
-          />
-        </div>
-  
-        <!-- Formulário -->
-        <form @submit.prevent="criarSessao" class="sessao-form">
-          <input v-model="novaSessao.visitante" type="text" placeholder="Nome do Visitante" required />
-          <input v-model="novaSessao.mestreDirigente" type="text" placeholder="Mestre Dirigente" required />
-          
-          <select v-model="novaSessao.tipoSessao" required>
-            <option value="" disabled>Tipo de Sessão</option>
-            <option>Escala</option>
-            <option>Escala Anual</option>
-            <option>Instrutiva</option>
-            <option>Quadro de Mestres</option>
-            <option>Direção</option>
-            <option>Extra</option>
-            <option>Adventícios</option>
-            <option>Outros</option>
-          </select>
-  
-          <input v-model="novaSessao.quemExplanou" type="text" placeholder="Quem fez a Explanação" required />
-          <input v-model="novaSessao.quemLeuDocumentos" type="text" placeholder="Quem leu os documentos" required />
-          <input v-model.number="novaSessao.participantes" type="number" placeholder="Número de Participantes" min="0" required />
-          <input v-model="novaSessao.chamadasFeitas" type="text" placeholder="Chamadas feitas" />
-          <input v-model="novaSessao.vegetal" type="text" placeholder="Vegetal utilizado" required />
-          <input v-model.number="novaSessao.quantidadeCoada" type="number" placeholder="Quantidade Coada" min="0" required />
-          <input v-model.number="novaSessao.retornoSessao" type="number" placeholder="Retorno da Sessão" min="0" required />
-  
-          <button type="submit">Registrar Sessão</button>
-        </form>
-  
-        <!-- Estoque Final -->
-        <div class="card estoque-card">
-          <h2>Estoque Final</h2>
-          <p>{{ estoqueFinal }}</p>
-        </div>
+  <PrivateLayout>
+    <div class="sessao-page">
+      <h1>Registrar Sessão 🌿</h1>
+
+      <!-- Mensagens -->
+      <p v-if="sucesso" class="success-message">{{ sucesso }}</p>
+      <p v-if="erro" class="error-message">{{ erro }}</p>
+
+      <!-- Estoque Inicial -->
+      <div class="card estoque-card">
+        <h2>Estoque Inicial</h2>
+        <input
+          type="number"
+          v-model.number="estoqueInicial"
+          placeholder="Informe o Estoque Inicial"
+          min="0"
+          readonly
+        />
       </div>
-    </PrivateLayout>
-  </template>
-  
-  <script setup>
-  import { ref, computed } from 'vue'
-  import axios from 'axios'
-  import PrivateLayout from '../components/PrivateLayout.vue'
-  
-  const novaSessao = ref({
-    visitante: '',
-    mestreDirigente: '',
-    tipoSessao: '',
-    quemExplanou: '',
-    quemLeuDocumentos: '',
-    participantes: 0,
-    chamadasFeitas: '',
-    vegetal: '',
-    quantidadeCoada: 0,
-    retornoSessao: 0
-  })
-  
-  const estoqueInicial = ref(0)
-  const estoqueFinal = computed(() => estoqueInicial.value - (novaSessao.value.quantidadeCoada - novaSessao.value.retornoSessao))
-  
-  const sucesso = ref('')
-  const erro = ref('')
-  
-  axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-  const API = import.meta.env.VITE_API_URL + '/api/sessoes'
-  
-  const criarSessao = async () => {
-    sucesso.value = ''
-    erro.value = ''
-  
-    // inclui o estoqueInicial enviado pelo usuário
-    novaSessao.value.estoqueInicial = estoqueInicial.value
-  
-    try {
-      await axios.post(API, novaSessao.value)
-      sucesso.value = 'Sessão registrada com sucesso!'
-  
-      // Resetar formulário
-      novaSessao.value = {
-        visitante: '',
-        mestreDirigente: '',
-        tipoSessao: '',
-        quemExplanou: '',
-        quemLeuDocumentos: '',
-        participantes: 0,
-        chamadasFeitas: '',
-        vegetal: '',
-        quantidadeCoada: 0,
-        retornoSessao: 0
-      }
-      estoqueInicial.value = estoqueFinal.value
-      setTimeout(() => (sucesso.value = ''), 3000)
-    } catch (e) {
-      erro.value = 'Erro ao registrar sessão: ' + (e.response?.data?.error || e.message)
-    }
+
+      <!-- Formulário -->
+      <form @submit.prevent="criarSessao" class="sessao-form">
+        <input v-model="novaSessao.visitante" type="text" placeholder="Nome do Visitante" required />
+        <input v-model="novaSessao.mestreDirigente" type="text" placeholder="Mestre Dirigente" required />
+        <select v-model="novaSessao.tipoSessao" required>
+          <option value="" disabled>Tipo de Sessão</option>
+          <option>Escala</option>
+          <option>Escala Anual</option>
+          <option>Instrutiva</option>
+          <option>Quadro de Mestres</option>
+          <option>Direção</option>
+          <option>Extra</option>
+          <option>Adventícios</option>
+          <option>Outros</option>
+        </select>
+        <input v-model="novaSessao.quemExplanou" type="text" placeholder="Quem fez a Explanação" required />
+        <input v-model="novaSessao.quemLeuDocumentos" type="text" placeholder="Quem leu os documentos" required />
+        <input v-model.number="novaSessao.participantes" type="number" placeholder="Número de Participantes" min="0" required />
+        <input v-model="novaSessao.chamadasFeitas" type="text" placeholder="Chamadas feitas" />
+        <input v-model="novaSessao.vegetal" type="text" placeholder="Vegetal utilizado" required />
+        <input v-model.number="novaSessao.quantidadeCoada" type="number" placeholder="Quantidade Coada" min="0" required />
+        <input v-model.number="novaSessao.retornoSessao" type="number" placeholder="Retorno da Sessão" min="0" required />
+
+        <button type="submit">Registrar Sessão</button>
+      </form>
+
+      <!-- Estoque Final -->
+      <div class="card estoque-card">
+        <h2>Estoque Final</h2>
+        <p>{{ estoqueFinal }}</p>
+      </div>
+    </div>
+  </PrivateLayout>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import PrivateLayout from '../components/PrivateLayout.vue'
+
+const novaSessao = ref({
+  visitante: '',
+  mestreDirigente: '',
+  tipoSessao: '',
+  quemExplanou: '',
+  quemLeuDocumentos: '',
+  participantes: 0,
+  chamadasFeitas: '',
+  vegetal: '',
+  quantidadeCoada: 0,
+  retornoSessao: 0
+})
+
+const estoqueInicial = ref(0)
+const estoqueFinal = ref(0)
+const sucesso = ref('')
+const erro = ref('')
+
+const API_SESSOES = import.meta.env.VITE_API_URL + '/api/sessoes'
+const API_ESTOQUE = import.meta.env.VITE_API_URL + '/api/estoques'
+
+axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+
+// Pegar o último estoque ao montar a página
+onMounted(async () => {
+  try {
+    const res = await axios.get(`${API_ESTOQUE}/derradeiro`)
+    estoqueInicial.value = res.data.quantidade || 0
+  } catch (e) {
+    erro.value = 'Não foi possível carregar o estoque inicial: ' + (e.response?.data?.error || e.message)
   }
-  </script>
+})
+
+const criarSessao = async () => {
+  sucesso.value = ''
+  erro.value = ''
+
+  novaSessao.value.estoqueInicial = estoqueInicial.value
+
+  try {
+    const res = await axios.post(API_SESSOES, novaSessao.value)
+    
+    sucesso.value = 'Sessão registrada com sucesso!'
+
+    estoqueInicial.value = res.data.estoqueFinal
+    estoqueFinal.value = res.data.estoqueFinal
+
+    // Resetar formulário
+    novaSessao.value = {
+      visitante: '',
+      mestreDirigente: '',
+      tipoSessao: '',
+      quemExplanou: '',
+      quemLeuDocumentos: '',
+      participantes: 0,
+      chamadasFeitas: '',
+      vegetal: '',
+      quantidadeCoada: 0,
+      retornoSessao: 0
+    }
+
+    setTimeout(() => (sucesso.value = ''), 3000)
+  } catch (e) {
+    erro.value = 'Erro ao registrar sessão: ' + (e.response?.data?.error || e.message)
+  }
+}
+</script>
+
+
+<style scoped>
+/* mantém seu estilo atual */
+</style>
+
+
   
   <style scoped>
   .sessao-page {
