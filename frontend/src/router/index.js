@@ -4,6 +4,7 @@ import Dashboard from '../pages/Dashboard.vue'
 import RegistrarSessao from '../pages/RegistrarSessao.vue'
 import RegistrarUsuario from '../pages/RegistrarUsuario.vue'
 import EstoqueSessao from '../pages/EstoqueSessao.vue'
+import ConsultaSessao from '../pages/ConsultaSessao.vue'
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -12,6 +13,7 @@ const routes = [
   { path: '/registrar-sessao', component: RegistrarSessao },
   { path: '/registrar-usuario', component: RegistrarUsuario },
   {path: '/registrar-estoque', component: EstoqueSessao},
+  {path: '/consultar-sessao', component: ConsultaSessao}
   
 ]
 

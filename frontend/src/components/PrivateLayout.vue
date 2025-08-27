@@ -16,6 +16,7 @@
       <nav :class="{ aberto: menuAberto }" @click="menuAberto = false">
         <router-link to="/registrar-sessao">Registrar Sessão</router-link>
         <router-link to="/registrar-usuario">Registrar Usuário</router-link>
+        <router-link to="/registrar-estoque">Registrar Estoque</router-link>
       </nav>
   
       <main>
@@ -39,7 +40,7 @@
   
   function goDashboard() {
     menuAberto.value = false
-    router.push('/registrar-sessao') // define qual página abrir ao clicar no logo
+    router.push('/dashboard') // define qual página abrir ao clicar no logo
   }
   </script>
   

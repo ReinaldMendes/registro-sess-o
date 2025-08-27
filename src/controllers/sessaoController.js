@@ -31,8 +31,34 @@ exports.criarSessao = async (req, res) => {
 
 exports.listarSessoes = async (req, res) => {
   try {
-    const sessoes = await Sessao.find().sort({ createdAt: 1 }); // ordenar por data
-    res.json(sessoes);
+    const { inicio, fim, page = 1, limit = 10 } = req.query;
+
+    // filtro por data
+    let filtro = {};
+    if (inicio && fim) {
+      filtro.dataSessao = { 
+        $gte: new Date(inicio), 
+        $lte: new Date(fim) 
+      };
+    }
+
+    // paginação
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [sessoes, total] = await Promise.all([
+      Sessao.find(filtro)
+        .sort({ dataSessao: 1 }) // ordena pela data da sessão
+        .skip(skip)
+        .limit(parseInt(limit)),
+      Sessao.countDocuments(filtro)
+    ]);
+
+    res.json({
+      sessoes,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / limit)
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

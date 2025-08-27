@@ -11,7 +11,7 @@ const autenticarToken = require("../middlewares/authMiddleware");
 
 // Rotas protegidas
 router.post("/", autenticarToken, criarSessao);
-router.get("/", autenticarToken, listarSessoes);
+router.get("/listarSessoes", autenticarToken, listarSessoes);
 router.get("/:id", autenticarToken, buscarSessao);
 router.delete("/:id", autenticarToken, deletarSessao);
 
