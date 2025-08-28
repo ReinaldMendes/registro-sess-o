@@ -36,9 +36,9 @@ exports.listarSessoes = async (req, res) => {
     // filtro por data
     let filtro = {};
     if (inicio && fim) {
-      filtro.dataSessao = { 
-        $gte: new Date(inicio), 
-        $lte: new Date(fim) 
+      filtro.dataSessao = {
+        $gte: new Date(inicio),
+        $lte: new Date(fim)
       };
     }
 
@@ -74,11 +74,37 @@ exports.buscarSessao = async (req, res) => {
   }
 };
 
-exports.deletarSessao = async (req, res) => {
+// --- MÉTODOS NOVOS E AJUSTADOS ---
+
+exports.editarSessao = async (req, res) => {
+  try {
+    const sessaoId = req.params.id;
+    const dadosAtualizados = req.body;
+
+    // Garante que o ID do Mongoose não seja atualizado
+    delete dadosAtualizados._id;
+
+    const sessaoAtualizada = await Sessao.findByIdAndUpdate(
+      sessaoId,
+      dadosAtualizados,
+      { new: true, runValidators: true } // new: true retorna o documento atualizado; runValidators: true executa as validações do schema
+    );
+
+    if (!sessaoAtualizada) {
+      return res.status(404).json({ msg: "Sessão não encontrada" });
+    }
+
+    res.json(sessaoAtualizada);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.excluirSessao = async (req, res) => {
   try {
     const sessao = await Sessao.findByIdAndDelete(req.params.id);
     if (!sessao) return res.status(404).json({ msg: "Sessão não encontrada" });
-    res.json({ msg: "Sessão removida" });
+    res.json({ msg: "Sessão removida com sucesso" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

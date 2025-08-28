@@ -4,7 +4,8 @@ const {
   criarSessao,
   listarSessoes,
   buscarSessao,
-  deletarSessao
+  editarSessao, // Adicionado
+  excluirSessao // Adicionado
 } = require("../controllers/sessaoController");
 
 const autenticarToken = require("../middlewares/authMiddleware");
@@ -13,6 +14,11 @@ const autenticarToken = require("../middlewares/authMiddleware");
 router.post("/", autenticarToken, criarSessao);
 router.get("/listarSessoes", autenticarToken, listarSessoes);
 router.get("/:id", autenticarToken, buscarSessao);
-router.delete("/:id", autenticarToken, deletarSessao);
+
+// Nova rota para edição (PUT)
+router.put("/editarSessao/:id", autenticarToken, editarSessao);
+
+// Rota para exclusão (DELETE)
+router.delete("/excluirSessao/:id", autenticarToken, excluirSessao);
 
 module.exports = router;
