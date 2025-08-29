@@ -17,6 +17,7 @@
         <router-link to="/registrar-sessao">Registrar Sessão</router-link>
         <router-link to="/registrar-usuario">Registrar Usuário</router-link>
         <router-link to="/registrar-estoque">Registrar Estoque</router-link>
+        <router-link to="/consultar-sessao">Consultar Sessão</router-link>
       </nav>
   
       <main>
