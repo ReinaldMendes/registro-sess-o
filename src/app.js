@@ -4,14 +4,27 @@ const connectDB = require("./config/db");
 
 const app = express();
 
-// middlewares
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://registro-sessaofront.onrender.com",
+  "https://registro-sessaoback.onrender.com/" // domínio público da API no Render
+];
+
 app.use(cors({
-    origin: "*",   // libera para qualquer origem
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-  }));
-  
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // permite Postman, curl, etc
+    if (allowedOrigins.indexOf(origin) === -1) {
+      console.warn("Origem não permitida pelo CORS: " + origin);
+      return callback(new Error("Not allowed by CORS"), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
 // conectar banco
@@ -21,4 +34,5 @@ connectDB();
 app.use("/api/sessoes", require("./routes/sessaoRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/estoques", require("./routes/estoqueRoutes"));
+
 module.exports = app;
