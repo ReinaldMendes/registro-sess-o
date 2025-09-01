@@ -135,8 +135,17 @@ exports.excluirSessao = async (req, res) => {
 exports.getDashboardStats = async (req, res) => {
   try {
     const ultimoEstoque = await Estoque.findOne().sort({ createdAt: -1 });
-    const estoqueAtual = ultimoEstoque ? ultimoEstoque.quantidade : 0;
-    res.json({ estoqueAtual });
+    
+    // Se não houver estoque, retorna valores padrão
+    if (!ultimoEstoque) {
+      return res.json({ estoqueAtual: 0, dataUltimaAtualizacao: null });
+    }
+    
+    // Retorna o valor e a data do último registro de estoque
+    res.json({
+      estoqueAtual: ultimoEstoque.quantidade,
+      dataUltimaAtualizacao: ultimoEstoque.createdAt
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -147,9 +156,9 @@ exports.getUltimosDirigentes = async (req, res) => {
     const ultimosDirigentes = await Sessao.find({})
       .sort({ dataSessao: -1 })
       .limit(5)
-      .select("mestreDirigente -_id");
+      .select("mestreDirigente dataSessao"); // Adicionamos 'dataSessao'
       
-    res.json(ultimosDirigentes.map(s => s.mestreDirigente));
+    res.json(ultimosDirigentes); // Agora retorna o objeto completo
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -160,9 +169,9 @@ exports.getUltimosExplanadores = async (req, res) => {
     const ultimosExplanadores = await Sessao.find({})
       .sort({ dataSessao: -1 })
       .limit(5)
-      .select("quemExplanou -_id");
+      .select("quemExplanou dataSessao"); // Adicionamos 'dataSessao'
     
-    res.json(ultimosExplanadores.map(s => s.quemExplanou));
+    res.json(ultimosExplanadores); // Agora retorna o objeto completo
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -173,9 +182,9 @@ exports.getUltimosLeitores = async (req, res) => {
     const ultimosLeitores = await Sessao.find({})
       .sort({ dataSessao: -1 })
       .limit(5)
-      .select("quemLeuDocumentos -_id");
+      .select("quemLeuDocumentos dataSessao"); // Adicionamos 'dataSessao'
 
-    res.json(ultimosLeitores.map(s => s.quemLeuDocumentos));
+    res.json(ultimosLeitores); // Agora retorna o objeto completo
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -184,16 +193,18 @@ exports.getUltimosLeitores = async (req, res) => {
 exports.getConsumoMedio = async (req, res) => {
   try {
     const sessoesComConsumo = await Sessao.find({ quantidadeBebida: { $exists: true, $ne: null } })
-      .sort({ dataSessao: 1 })
-      .limit(10); // Limita para os últimos 10 para o gráfico
+      .sort({ dataSessao: -1 }) // Ordena da mais recente para a mais antiga
+      .limit(5); // Limita para as 5 últimas sessões
 
     const dadosConsumo = sessoesComConsumo.map(s => ({
-      data: s.dataSessao.toISOString().split('T')[0],
-      // Aqui está o problema: você precisa pegar o valor real da quantidadeBebida
-      consumo: s.quantidadeBebida // Verifique se o nome do campo é 'quantidadeBebida'
+      // Garantimos que a data é um formato legível para o gráfico
+      data: new Date(s.dataSessao).toLocaleDateString('pt-BR'), 
+      consumo: s.quantidadeBebida || 0 // Pega o valor ou 0 se for nulo
     }));
 
-    res.json(dadosConsumo);
+    // Invertemos o array para o gráfico ficar em ordem cronológica
+    res.json(dadosConsumo.reverse()); 
+    
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
