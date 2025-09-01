@@ -3,7 +3,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 
 const app = express();
-
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174','https://registro-sessaofront.onrender.com'];
 // middlewares
 app.use(cors({
     origin: function(origin, callback){
