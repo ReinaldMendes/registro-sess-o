@@ -5,7 +5,19 @@ const connectDB = require("./config/db");
 const app = express();
 
 // middlewares
-app.use(cors());
+app.use(cors({
+    origin: function(origin, callback){
+      if(!origin) return callback(null, true); // permite Postman etc
+      if(allowedOrigins.indexOf(origin) === -1){
+        console.warn('Origem não permitida pelo CORS: ' + origin);
+        return callback(null, false); // Rejeita o CORS mas não retorna erro
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
 app.use(express.json());
 
 // conectar banco
