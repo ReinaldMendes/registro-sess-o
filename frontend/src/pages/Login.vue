@@ -23,7 +23,7 @@
   import logo from '../assets/udv_logo.jpg' // ajuste para a sua imagem
   
   // URL da sua API
-  const API_LOGIN = "http://localhost:5000/api/auth/login"
+  const API_LOGIN = import.meta.env.VITE_API_URL + '/api/auth/login'
   
   const router = useRouter()
   const email = ref('')
