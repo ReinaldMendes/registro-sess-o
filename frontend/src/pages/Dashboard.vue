@@ -14,34 +14,40 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-lg shadow-md max-w-full">
-          <h2 class="text-xl font-bold text-gray-700 mb-4">Consumo de Vegetal por Sessão</h2>
-          
-          <div class="chart-container">
-            <BarChart 
-              v-if="consumoData.length" 
-              :data="consumoData" 
-            />
-            <p v-else class="text-gray-500 text-center">Nenhum dado de consumo disponível.</p>
+        <div class="dashboard-card-modern">
+          <div class="card-header bg-gray-700">
+            <h2 class="card-title text-white">
+              <i class="fas fa-chart-bar text-xl mr-2"></i>
+              Consumo de Vegetal por Sessão
+            </h2>
+          </div>
+          <div class="card-content p-6">
+            <div class="chart-container">
+              <BarChart 
+                v-if="consumoData.length" 
+                :data="consumoData" 
+              />
+              <p v-else class="text-gray-500 text-center text-sm">Nenhum dado de consumo disponível.</p>
+            </div>
           </div>
         </div>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <DashboardTableCard 
-          title="5 Últimos Mestres Dirigentes" 
+          title="5 Derradeiros Mestres Dirigentes" 
           :items="ultimosMestresFormatado" 
           color="blue" 
           icon="crown" 
         />
         <DashboardTableCard 
-          title="5 Últimos a Ler Documentos" 
+          title="5 Derradeiros a Ler Documentos" 
           :items="ultimosLeitoresFormatado" 
           color="purple" 
           icon="file-alt" 
         />
         <DashboardTableCard 
-          title="5 Últimos a Explanar" 
+          title="5 Derradeiros a Explanar" 
           :items="ultimosExplanadoresFormatado" 
           color="orange" 
           icon="comment-dots" 
@@ -55,14 +61,14 @@
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import PrivateLayout from '../components/PrivateLayout.vue'
-import DashboardStockCard from '../components/DashboardStockCard.vue' // Importação do novo componente
+import DashboardStockCard from '../components/DashboardStockCard.vue'
 import DashboardTableCard from '../components/DashboardTableCard.vue'
 import BarChart from '../components/BarChart.vue'
 
 const API = import.meta.env.VITE_API_URL
 
 const estoqueVegetal = ref(0)
-const dataUltimaAtualizacao = ref(null) // Nova variável
+const dataUltimaAtualizacao = ref(null)
 const ultimosMestres = ref([])
 const ultimosExplanadores = ref([])
 const ultimosLeitores = ref([])
@@ -83,7 +89,7 @@ const carregarDashboard = async () => {
   try {
     const { data: stats } = await axios.get(`${API}/api/sessoes/dashboard/stats`);
     estoqueVegetal.value = stats.estoqueAtual;
-    dataUltimaAtualizacao.value = stats.dataUltimaAtualizacao; // Armazenamos a data
+    dataUltimaAtualizacao.value = stats.dataUltimaAtualizacao;
 
     const { data: mestres } = await axios.get(`${API}/api/sessoes/dashboard/ultimos-dirigentes`);
     ultimosMestres.value = mestres;
@@ -129,7 +135,62 @@ const ultimosLeitoresFormatado = computed(() => {
 </script>
 
 <style scoped>
-/* Estilos existentes */
+
+/* Adicione esta classe ao seu estilo scoped do Dashboard.vue */
+.dashboard-card-modern {
+  @apply bg-white rounded-xl shadow-lg overflow-hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card-modern:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  @apply text-white p-4 text-center;
+}
+
+.card-title {
+  @apply text-xl font-bold flex items-center justify-center;
+}
+
+.card-content {
+  @apply p-6 flex-grow;
+}
+.dashboard-graph-card {
+  @apply bg-white rounded-lg shadow-xl;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-graph-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  @apply text-white p-4 rounded-t-lg text-center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-title {
+  @apply text-xl font-bold;
+}
+
+.card-content {
+  @apply p-6 flex-grow;
+}
+
 h1 {
   text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
