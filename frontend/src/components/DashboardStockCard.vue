@@ -1,15 +1,15 @@
 <template>
-  <div class="dashboard-card-modern">
-    <div class="card-header bg-green-500">
-      <h2 class="card-title text-white">
-        <i class="fas fa-leaf text-xl mr-2"></i>
-        {{ title }}
-      </h2>
-    </div>
-    
-    <div class="card-content flex-col items-center justify-center py-6 px-4">
-      <p class="main-value text-green-700">{{ value }} ml</p>
-      <p class="sub-info text-gray-500 mt-2 text-center">Última atualização: {{ formatarData(date) }}</p>
+  <div class="dashboard-stock-card">
+    <div class="total-card">
+      <div class="header-card">
+        <div class="icon-circle" :class="`bg-${color}-500`">
+          <i class="fas" :class="`fa-${icon} text-white`"></i>
+        </div>
+        <h2 class="title-card">{{ title }}</h2>
+      </div>
+
+      <p class="value-card">{{ value }} ml</p>
+      <p class="date-card">Última atualização: {{ formatarData(date) }}</p>
     </div>
   </div>
 </template>
@@ -21,6 +21,8 @@ const props = defineProps({
   title: String,
   value: [Number, String],
   date: String,
+  color: String,
+  icon: String,
 })
 
 const formatarData = (dataStr) => {
@@ -30,40 +32,52 @@ const formatarData = (dataStr) => {
 </script>
 
 <style scoped>
-.dashboard-card-modern {
-  @apply bg-white rounded-xl shadow-lg overflow-hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  min-height: 150px;
+.dashboard-stock-card {
+  @apply bg-transparent;
   display: flex;
-  flex-direction: column;
-}
-
-.dashboard-card-modern:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  @apply text-white p-4 text-center;
-}
-
-.card-title {
-  @apply text-xl font-bold flex items-center justify-center;
-}
-
-.card-content {
-  @apply flex-grow;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
-.main-value {
-  @apply text-5xl font-extrabold;
+.total-card {
+  @apply bg-white rounded-xl shadow-lg p-6;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.sub-info {
-  @apply text-base;
+.total-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.header-card {
+  @apply flex items-center justify-center mb-4;
+  gap: 1rem;
+}
+
+.icon-circle {
+  @apply w-12 h-12 rounded-full flex items-center justify-center;
+}
+
+.title-card {
+  @apply text-xl font-bold text-gray-800;
+  margin: 0;
+}
+
+.value-card {
+  @apply text-5xl font-extrabold text-green-600;
+  margin: 0.5rem 0;
+}
+
+.date-card {
+  @apply text-sm text-gray-500;
+  margin-top: 0.5rem;
 }
 </style>
