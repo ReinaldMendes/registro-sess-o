@@ -26,7 +26,7 @@
           required
         />
         
-        <input v-model="novaSessao.visitante" type="text" placeholder="Nome do Visitante" required />
+        <input v-model="novaSessao.visitantes" type="text" placeholder="Nome do Visitante" required />
         <input v-model="novaSessao.mestreDirigente" type="text" placeholder="Mestre Dirigente" required />
         <select v-model="novaSessao.tipoSessao" required>
           <option value="" disabled>Tipo de Sessão</option>
@@ -64,8 +64,8 @@ import axios from 'axios'
 import PrivateLayout from '../components/PrivateLayout.vue'
 
 const novaSessao = ref({
-  dataSessao: '', // Adicionando a nova propriedade para a data
-  visitante: '',
+  dataSessao: '',
+  visitantes: '', // Corrigido: agora com "visitantes" no plural
   mestreDirigente: '',
   tipoSessao: '',
   quemExplanou: '',
@@ -87,7 +87,6 @@ const API_ESTOQUE = import.meta.env.VITE_API_URL + '/api/estoques'
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
 
-// Pegar o último estoque ao montar a página
 onMounted(async () => {
   try {
     const res = await axios.get(`${API_ESTOQUE}/derradeiro`)
@@ -113,8 +112,8 @@ const criarSessao = async () => {
 
     // Resetar formulário
     novaSessao.value = {
-      dataSessao: '', // Resetando o campo dataSessao
-      visitante: '',
+      dataSessao: '',
+      visitantes: '', // Corrigido no reset
       mestreDirigente: '',
       tipoSessao: '',
       quemExplanou: '',
@@ -217,12 +216,11 @@ const criarSessao = async () => {
   font-weight: bold;
 }
 
-/* Novo estilo para o label da data */
 .form-label {
   flex-basis: 100%;
   font-weight: bold;
   color: #555;
-  margin-bottom: -0.5rem; /* Ajusta o espaçamento */
+  margin-bottom: -0.5rem;
 }
 
 @media (max-width: 720px) {
