@@ -45,7 +45,7 @@
               <th>Quem Explanou</th>
               <th>Quem Leu Documentos</th>
               <th>Participantes</th>
-              <th>Visitante</th>
+              <th>Visitantes</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -58,7 +58,7 @@
                 <td>{{ s.quemExplanou }}</td>
                 <td>{{ s.quemLeuDocumentos }}</td>
                 <td>{{ s.participantes }}</td>
-                <td>{{ s.visitante }}</td>
+                <td>{{ s.visitantes }}</td>
                 <td class="acoes-coluna">
                   <button @click="iniciarEdicao(s)" class="btn-acao editar">
                     <i class="fas fa-pencil-alt"></i>
@@ -89,7 +89,7 @@
                   <input type="text" v-model="sessaoSendoEditada.participantes" />
                 </td>
                 <td data-label="Visitante">
-                  <input type="text" v-model="sessaoSendoEditada.visitante" />
+                  <input type="text" v-model="sessaoSendoEditada.visitantes" />
                 </td>
                 <td class="acoes-coluna">
                   <button @click="salvarEdicao" class="btn-acao salvar">
@@ -254,7 +254,7 @@ const imprimirRelatorio = () => {
     s.quemExplanou,
     s.quemLeuDocumentos,
     s.participantes,
-    s.visitante,
+    s.visitantes,
   ]);
 
   autoTable(doc, {
@@ -267,7 +267,7 @@ const imprimirRelatorio = () => {
         "Explanou",
         "Leu Docs",
         "Participantes",
-        "Visitante",
+        "Visitantes",
       ],
     ],
     body: dadosTabela,
