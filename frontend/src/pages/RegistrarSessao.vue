@@ -3,11 +3,9 @@
     <div class="sessao-page">
       <h1>Registrar Sessão 🌿</h1>
 
-      <!-- Mensagens -->
       <p v-if="sucesso" class="success-message">{{ sucesso }}</p>
       <p v-if="erro" class="error-message">{{ erro }}</p>
 
-      <!-- Estoque Inicial -->
       <div class="card estoque-card">
         <h2>Estoque Inicial</h2>
         <input
@@ -19,8 +17,15 @@
         />
       </div>
 
-      <!-- Formulário -->
       <form @submit.prevent="criarSessao" class="sessao-form">
+        <label for="dataSessao" class="form-label">Data da Sessão</label>
+        <input
+          id="dataSessao"
+          v-model="novaSessao.dataSessao"
+          type="date"
+          required
+        />
+        
         <input v-model="novaSessao.visitante" type="text" placeholder="Nome do Visitante" required />
         <input v-model="novaSessao.mestreDirigente" type="text" placeholder="Mestre Dirigente" required />
         <select v-model="novaSessao.tipoSessao" required>
@@ -45,7 +50,6 @@
         <button type="submit">Registrar Sessão</button>
       </form>
 
-      <!-- Estoque Final -->
       <div class="card estoque-card">
         <h2>Estoque Final</h2>
         <p>{{ estoqueFinal }}</p>
@@ -60,6 +64,7 @@ import axios from 'axios'
 import PrivateLayout from '../components/PrivateLayout.vue'
 
 const novaSessao = ref({
+  dataSessao: '', // Adicionando a nova propriedade para a data
   visitante: '',
   mestreDirigente: '',
   tipoSessao: '',
@@ -108,6 +113,7 @@ const criarSessao = async () => {
 
     // Resetar formulário
     novaSessao.value = {
+      dataSessao: '', // Resetando o campo dataSessao
       visitante: '',
       mestreDirigente: '',
       tipoSessao: '',
@@ -127,109 +133,109 @@ const criarSessao = async () => {
 }
 </script>
 
-
 <style scoped>
-/* mantém seu estilo atual */
-</style>
+.sessao-page {
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
 
+.sessao-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #09861a;
+}
 
-  
-  <style scoped>
-  .sessao-page {
-    padding: 2rem;
-    max-width: 700px;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
-  
-  .sessao-page h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    color: #09861a;
-  }
-  
+.sessao-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.sessao-form input,
+.sessao-form select {
+  flex: 1 1 150px;
+  padding: 0.6rem;
+  font-size: 1rem;
+  min-width: 120px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.sessao-form button {
+  flex-basis: 100%;
+  padding: 0.75rem;
+  background-color: #09861a;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+}
+
+.sessao-form button:hover {
+  background-color: #076215;
+}
+
+.card {
+  background-color: #f4fdf7;
+  border-left: 5px solid #09861a;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.estoque-card input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.estoque-card p {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.success-message {
+  color: green;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+/* Novo estilo para o label da data */
+.form-label {
+  flex-basis: 100%;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: -0.5rem; /* Ajusta o espaçamento */
+}
+
+@media (max-width: 720px) {
   .sessao-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    flex-direction: column;
   }
-  
+
   .sessao-form input,
-  .sessao-form select {
-    flex: 1 1 150px;
-    padding: 0.6rem;
-    font-size: 1rem;
-    min-width: 120px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-  
-  .sessao-form button {
-    flex-basis: 100%;
-    padding: 0.75rem;
-    background-color: #09861a;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    transition: background-color 0.3s;
-  }
-  
-  .sessao-form button:hover {
-    background-color: #076215;
-  }
-  
-  .card {
-    background-color: #f4fdf7;
-    border-left: 5px solid #09861a;
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-  }
-  
+  .sessao-form select,
+  .sessao-form button,
   .estoque-card input {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    margin-top: 0.5rem;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    flex-basis: 100%;
+    min-width: auto;
   }
-  
-  .estoque-card p {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-top: 0.5rem;
-  }
-  
-  .success-message {
-    color: green;
-    margin-bottom: 1rem;
-    font-weight: bold;
-  }
-  
-  .error-message {
-    color: red;
-    margin-bottom: 1rem;
-    font-weight: bold;
-  }
-  
-  @media (max-width: 720px) {
-    .sessao-form {
-      flex-direction: column;
-    }
-  
-    .sessao-form input,
-    .sessao-form select,
-    .sessao-form button,
-    .estoque-card input {
-      flex-basis: 100%;
-      min-width: auto;
-    }
-  }
-  </style>
-  
+}
+</style>
