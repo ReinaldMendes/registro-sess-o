@@ -123,9 +123,30 @@ exports.editarSessao = async (req, res) => {
 
 exports.excluirSessao = async (req, res) => {
   try {
-    const sessao = await Sessao.findByIdAndDelete(req.params.id);
-    if (!sessao) return res.status(404).json({ msg: "Sessão não encontrada" });
-    res.json({ msg: "Sessão removida com sucesso" });
+    const sessaoExcluida = await Sessao.findById(req.params.id);
+    if (!sessaoExcluida) {
+      return res.status(404).json({ msg: "Sessão não encontrada" });
+    }
+
+    // 1. Encontra o último registro de estoque
+    const ultimoEstoque = await Estoque.findOne().sort({ createdAt: -1 });
+
+    if (ultimoEstoque) {
+      // 2. Calcula a quantidade a ser adicionada de volta
+      const quantidadeBebidaReversa = sessaoExcluida.quantidadeBebida;
+      
+      // 3. Atualiza o ÚLTIMO registro de estoque com o novo valor.
+      await Estoque.findByIdAndUpdate(
+        ultimoEstoque._id,
+        { $inc: { quantidade: quantidadeBebidaReversa } },
+        { new: true }
+      );
+    }
+    
+    // 4. Exclui a sessão permanentemente
+    await Sessao.findByIdAndDelete(req.params.id);
+
+    res.json({ msg: "Sessão removida e estoque ajustado com sucesso" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

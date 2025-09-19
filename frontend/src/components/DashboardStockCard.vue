@@ -8,14 +8,14 @@
         <h2 class="title-card">{{ title }}</h2>
       </div>
 
-      <p class="value-card">{{ value }} ml</p>
+      <p class="value-card">{{ estoqueEmLitros }} L</p>
       <p class="date-card">Última atualização: {{ formatarData(date) }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, computed } from 'vue'
 
 const props = defineProps({
   title: String,
@@ -24,6 +24,16 @@ const props = defineProps({
   color: String,
   icon: String,
 })
+
+// Computed property para converter ml para litros e formatar o número
+const estoqueEmLitros = computed(() => {
+  // Converte para um número e divide por 1000
+  const valorEmMl = Number(props.value);
+  const valorEmLitros = valorEmMl / 1000;
+  
+  // Retorna o valor formatado para o padrão brasileiro com 3 casas decimais
+  return valorEmLitros.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+});
 
 const formatarData = (dataStr) => {
   if (!dataStr) return 'Sem dados';
