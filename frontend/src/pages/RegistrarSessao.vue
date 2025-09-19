@@ -8,13 +8,7 @@
 
       <div class="card estoque-card">
         <h2>Estoque Inicial</h2>
-        <input
-          type="number"
-          v-model.number="estoqueInicial"
-          placeholder="Informe o Estoque Inicial"
-          min="0"
-          readonly
-        />
+        <p>{{ estoqueInicialFormatado }} litros</p>
       </div>
 
       <form @submit.prevent="criarSessao" class="sessao-form">
@@ -42,36 +36,35 @@
         <input v-model="novaSessao.quemExplanou" type="text" placeholder="Quem fez a Explanação" required />
         <input v-model="novaSessao.quemLeuDocumentos" type="text" placeholder="Quem leu os documentos" required />
         <input v-model.number="novaSessao.participantes" type="number" placeholder="Número de Participantes" min="0" required />
-        <input v-model="novaSessao.chamadasFeitas" type="text" placeholder="Chamadas feitas" />
         <input v-model="novaSessao.vegetal" type="text" placeholder="Vegetal utilizado" required />
-        <input v-model.number="novaSessao.quantidadeCoada" type="number" placeholder="Quantidade Coada" min="0" required />
-        <input v-model.number="novaSessao.retornoSessao" type="number" placeholder="Retorno da Sessão" min="0" required />
+        
+        <input v-model.number="novaSessao.quantidadeCoada" type="number" placeholder="Quantidade Coada (litros)" min="0" step="any" required />
+        <input v-model.number="novaSessao.retornoSessao" type="number" placeholder="Retorno da Sessão (litros)" min="0" step="any" required />
 
         <button type="submit">Registrar Sessão</button>
       </form>
 
       <div class="card estoque-card">
         <h2>Estoque Final</h2>
-        <p>{{ estoqueFinal }}</p>
+        <p>{{ estoqueFinalFormatado }} litros</p>
       </div>
     </div>
   </PrivateLayout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import PrivateLayout from '../components/PrivateLayout.vue'
 
 const novaSessao = ref({
   dataSessao: '',
-  visitantes: '', // Corrigido: agora com "visitantes" no plural
+  visitantes: '',
   mestreDirigente: '',
   tipoSessao: '',
   quemExplanou: '',
   quemLeuDocumentos: '',
   participantes: 0,
-  chamadasFeitas: '',
   vegetal: '',
   quantidadeCoada: 0,
   retornoSessao: 0
@@ -81,6 +74,15 @@ const estoqueInicial = ref(0)
 const estoqueFinal = ref(0)
 const sucesso = ref('')
 const erro = ref('')
+
+// Computed properties para formatar a exibição
+const estoqueInicialFormatado = computed(() => {
+  return (estoqueInicial.value / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 3 });
+});
+
+const estoqueFinalFormatado = computed(() => {
+  return (estoqueFinal.value / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 3 });
+});
 
 const API_SESSOES = import.meta.env.VITE_API_URL + '/api/sessoes'
 const API_ESTOQUE = import.meta.env.VITE_API_URL + '/api/estoques'
@@ -100,26 +102,33 @@ const criarSessao = async () => {
   sucesso.value = ''
   erro.value = ''
 
-  novaSessao.value.estoqueInicial = estoqueInicial.value
+  // Prepara os dados para o backend (converte litros para ml)
+  const dadosParaEnviar = {
+    ...novaSessao.value,
+    estoqueInicial: estoqueInicial.value,
+    quantidadeCoada: novaSessao.value.quantidadeCoada * 1000,
+    retornoSessao: novaSessao.value.retornoSessao * 1000,
+    chamadasFeitas: '', // Campo opcional agora enviado como vazio
+  };
 
   try {
-    const res = await axios.post(API_SESSOES, novaSessao.value)
+    const res = await axios.post(API_SESSOES, dadosParaEnviar)
     
     sucesso.value = 'Sessão registrada com sucesso!'
 
+    // Atualiza os estoques (em ml)
     estoqueInicial.value = res.data.estoqueFinal
     estoqueFinal.value = res.data.estoqueFinal
 
     // Resetar formulário
     novaSessao.value = {
       dataSessao: '',
-      visitantes: '', // Corrigido no reset
+      visitantes: '',
       mestreDirigente: '',
       tipoSessao: '',
       quemExplanou: '',
       quemLeuDocumentos: '',
       participantes: 0,
-      chamadasFeitas: '',
       vegetal: '',
       quantidadeCoada: 0,
       retornoSessao: 0

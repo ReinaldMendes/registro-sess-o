@@ -3,11 +3,24 @@ const Estoque = require("../models/Estoque");
 
 exports.criarSessao = async (req, res) => {
   try {
-    // Pega o estoque atual
-    const ultimoEstoque = await Estoque.findOne().sort({ createdAt: -1 });
-    const estoqueInicial = ultimoEstoque ? ultimoEstoque.quantidade : 0;
-
-    const quantidadeBebida = req.body.quantidadeCoada - req.body.retornoSessao;
+    const {
+      visitantes,
+      mestreDirigente,
+      tipoSessao,
+      quemExplanou,
+      quemLeuDocumentos,
+      participantes,
+      vegetal,
+      quantidadeCoada,
+      retornoSessao,
+      dataSessao
+      // 'chamadasFeitas' não é mais necessário na desestruturação, pois é opcional
+    } = req.body;
+    
+    // O frontend agora envia o estoque inicial. Vamos usá-lo.
+    const estoqueInicial = req.body.estoqueInicial;
+    
+    const quantidadeBebida = quantidadeCoada - retornoSessao;
     const estoqueFinal = estoqueInicial - quantidadeBebida;
 
     // Cria a sessão
@@ -35,7 +48,6 @@ exports.listarSessoes = async (req, res) => {
 
     let filtro = {};
 
-    // Filtro por data
     if (inicio && fim) {
       filtro.dataSessao = { 
         $gte: new Date(inicio), 
@@ -43,22 +55,18 @@ exports.listarSessoes = async (req, res) => {
       };
     }
 
-    // Filtro por Mestre Dirigente (busca parcial com expressão regular e case-insensitive)
     if (mestre) {
       filtro.mestreDirigente = { $regex: mestre, $options: 'i' };
     }
 
-    // Filtro por Quem Explanou (busca parcial e case-insensitive)
     if (explanou) {
       filtro.quemExplanou = { $regex: explanou, $options: 'i' };
     }
 
-    // Filtro por Quem Leu Documentos (busca parcial e case-insensitive)
     if (leuDocs) {
       filtro.quemLeuDocumentos = { $regex: leuDocs, $options: 'i' };
     }
 
-    // Paginação
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const [sessoes, total] = await Promise.all([
@@ -79,10 +87,6 @@ exports.listarSessoes = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// As outras funções (buscarSessao, editarSessao, excluirSessao)
-// permanecem as mesmas.
-// ... (código delas) ...
 
 exports.buscarSessao = async (req, res) => {
   try {
@@ -126,22 +130,16 @@ exports.excluirSessao = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-// controllers/sessaoController.js
-
-// ... (código existente da controller) ...
-
 
 // FUNÇÕES DO DASHBOARD
 exports.getDashboardStats = async (req, res) => {
   try {
     const ultimoEstoque = await Estoque.findOne().sort({ createdAt: -1 });
     
-    // Se não houver estoque, retorna valores padrão
     if (!ultimoEstoque) {
       return res.json({ estoqueAtual: 0, dataUltimaAtualizacao: null });
     }
     
-    // Retorna o valor e a data do último registro de estoque
     res.json({
       estoqueAtual: ultimoEstoque.quantidade,
       dataUltimaAtualizacao: ultimoEstoque.createdAt
@@ -156,9 +154,9 @@ exports.getUltimosDirigentes = async (req, res) => {
     const ultimosDirigentes = await Sessao.find({})
       .sort({ dataSessao: -1 })
       .limit(5)
-      .select("mestreDirigente dataSessao"); // Adicionamos 'dataSessao'
+      .select("mestreDirigente dataSessao");
       
-    res.json(ultimosDirigentes); // Agora retorna o objeto completo
+    res.json(ultimosDirigentes);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -169,9 +167,9 @@ exports.getUltimosExplanadores = async (req, res) => {
     const ultimosExplanadores = await Sessao.find({})
       .sort({ dataSessao: -1 })
       .limit(5)
-      .select("quemExplanou dataSessao"); // Adicionamos 'dataSessao'
+      .select("quemExplanou dataSessao");
     
-    res.json(ultimosExplanadores); // Agora retorna o objeto completo
+    res.json(ultimosExplanadores);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -182,9 +180,9 @@ exports.getUltimosLeitores = async (req, res) => {
     const ultimosLeitores = await Sessao.find({})
       .sort({ dataSessao: -1 })
       .limit(5)
-      .select("quemLeuDocumentos dataSessao"); // Adicionamos 'dataSessao'
+      .select("quemLeuDocumentos dataSessao");
 
-    res.json(ultimosLeitores); // Agora retorna o objeto completo
+    res.json(ultimosLeitores);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -193,16 +191,14 @@ exports.getUltimosLeitores = async (req, res) => {
 exports.getConsumoMedio = async (req, res) => {
   try {
     const sessoesComConsumo = await Sessao.find({ quantidadeBebida: { $exists: true, $ne: null } })
-      .sort({ dataSessao: -1 }) // Ordena da mais recente para a mais antiga
-      .limit(5); // Limita para as 5 últimas sessões
+      .sort({ dataSessao: -1 })
+      .limit(5);
 
     const dadosConsumo = sessoesComConsumo.map(s => ({
-      // Garantimos que a data é um formato legível para o gráfico
       data: new Date(s.dataSessao).toLocaleDateString('pt-BR'), 
-      consumo: s.quantidadeBebida || 0 // Pega o valor ou 0 se for nulo
+      consumo: s.quantidadeBebida || 0
     }));
 
-    // Invertemos o array para o gráfico ficar em ordem cronológica
     res.json(dadosConsumo.reverse()); 
     
   } catch (error) {
