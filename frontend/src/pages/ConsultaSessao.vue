@@ -200,7 +200,17 @@ const limparFiltros = () => {
 };
 
 const formatarData = (dataStr) => {
-  return new Date(dataStr).toLocaleDateString("pt-BR");
+  // Cria um objeto de data a partir da string
+  const data = new Date(dataStr);
+
+  // Obtém o fuso horário local do navegador em minutos
+  const timezoneOffset = data.getTimezoneOffset();
+
+  // Ajusta a data para anular o fuso horário, garantindo que ela represente o dia UTC
+  data.setMinutes(data.getMinutes() + timezoneOffset);
+
+  // Retorna a data formatada para o formato brasileiro
+  return data.toLocaleDateString("pt-BR");
 };
 
 const iniciarEdicao = (sessao) => {

@@ -63,7 +63,7 @@ exports.listarSessoes = async (req, res) => {
 
     const [sessoes, total] = await Promise.all([
       Sessao.find(filtro)
-        .sort({ dataSessao: 1 })
+        .sort({ dataSessao: -1 })
         .skip(skip)
         .limit(parseInt(limit)),
       Sessao.countDocuments(filtro)
