@@ -8,6 +8,7 @@ const SessaoSchema = new mongoose.Schema({
     enum: ["Escala", "Escala Anual", "Instrutiva", "Quadro de Mestres", "Direção", "Extra", "Adventícios", "Outros"], 
     required: true 
   },
+  observacao: { type: String, required: false },
   quemExplanou: { type: String, required: false },
   quemLeuDocumentos: { type: String, required: false },
   participantes: { type: Number, required: false },

@@ -33,6 +33,8 @@
           <option>Adventícios</option>
           <option>Outros</option>
         </select>
+        
+        <input v-model="novaSessao.observacao" type="text" placeholder="Observações (opcional)" />
         <input v-model="novaSessao.quemExplanou" type="text" placeholder="Quem fez a Explanação" required />
         <input v-model="novaSessao.quemLeuDocumentos" type="text" placeholder="Quem leu os documentos" required />
         <input v-model.number="novaSessao.participantes" type="number" placeholder="Número de Participantes" min="0" required />
@@ -62,6 +64,7 @@ const novaSessao = ref({
   visitantes: '',
   mestreDirigente: '',
   tipoSessao: '',
+  observacao: '', // --- Adicionado o campo aqui
   quemExplanou: '',
   quemLeuDocumentos: '',
   participantes: 0,
@@ -75,7 +78,6 @@ const estoqueFinal = ref(0)
 const sucesso = ref('')
 const erro = ref('')
 
-// Computed properties para formatar a exibição
 const estoqueInicialFormatado = computed(() => {
   return (estoqueInicial.value / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 3 });
 });
@@ -102,13 +104,12 @@ const criarSessao = async () => {
   sucesso.value = ''
   erro.value = ''
 
-  // Prepara os dados para o backend (converte litros para ml)
   const dadosParaEnviar = {
     ...novaSessao.value,
     estoqueInicial: estoqueInicial.value,
     quantidadeCoada: novaSessao.value.quantidadeCoada * 1000,
     retornoSessao: novaSessao.value.retornoSessao * 1000,
-    chamadasFeitas: '', // Campo opcional agora enviado como vazio
+    chamadasFeitas: '',
   };
 
   try {
@@ -116,16 +117,15 @@ const criarSessao = async () => {
     
     sucesso.value = 'Sessão registrada com sucesso!'
 
-    // Atualiza os estoques (em ml)
     estoqueInicial.value = res.data.estoqueFinal
     estoqueFinal.value = res.data.estoqueFinal
 
-    // Resetar formulário
     novaSessao.value = {
       dataSessao: '',
       visitantes: '',
       mestreDirigente: '',
       tipoSessao: '',
+      observacao: '', // --- Adicionado o reset aqui
       quemExplanou: '',
       quemLeuDocumentos: '',
       participantes: 0,
@@ -142,6 +142,10 @@ const criarSessao = async () => {
 </script>
 
 <style scoped>
+/* A maioria dos estilos permanece igual.
+Apenas se precisar ajustar o layout, adicione uma regra CSS para o novo campo,
+mas ele deve se adaptar bem com as regras existentes.
+*/
 .sessao-page {
   padding: 2rem;
   max-width: 700px;
